@@ -3,10 +3,14 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\V1\PokemonController;
 use App\Http\Controllers\Api\V1\TeamController;
+use App\Http\Controllers\Api\V1\SearchController;
 
 Route::prefix('v1')->group(function () {
     Route::get('/pokemons', [PokemonController::class, 'index']);
     Route::get('/pokemons/{id}', [PokemonController::class, 'show']);
+
+    // Search endpoint
+    Route::get('/search', [SearchController::class, 'search']);
 
     // Protected Team routes with hardcoded token
     Route::middleware('team.auth')->group(function () {
