@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Pokemon;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class PokemonController extends Controller
 {
@@ -58,6 +59,84 @@ class PokemonController extends Controller
                 })->toArray(),
             ];
         });
+
+        return response()->json($data, 200, [], JSON_UNESCAPED_SLASHES);
+    }
+
+    /**
+     * Get a pokemon by id
+     */
+    public function show($id): JsonResponse
+    {
+        // Find by external_id (not the internal database id)
+        $pokemon = Pokemon::where('external_id', $id)
+            ->with([
+                'types' => function ($query) {
+                    $query->orderBy('slot');
+                },
+                'abilities' => function ($query) {
+                    $query->orderBy('slot');
+                },
+                'stats',
+                'moves',
+            ])
+            ->first();
+
+        if (!$pokemon) {
+            return response()->json([
+                'error' => 'Not Found',
+                'error_message' => 'Pokemon not found',
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $sprites = $pokemon->sprites ?? [];
+
+        $data = [
+            'id' => $pokemon->external_id,
+            'name' => $pokemon->name,
+            'sprites' => [
+                'front_default' => $sprites['front_default'] ?? null,
+                'front_female' => $sprites['front_female'] ?? null,
+                'front_shiny' => $sprites['front_shiny'] ?? null,
+                'front_shiny_female' => $sprites['front_shiny_female'] ?? null,
+                'back_default' => $sprites['back_default'] ?? null,
+                'back_female' => $sprites['back_female'] ?? null,
+                'back_shiny' => $sprites['back_shiny'] ?? null,
+                'back_shiny_female' => $sprites['back_shiny_female'] ?? null,
+            ],
+            'types' => $pokemon->types->map(function ($type) {
+                return [
+                    'type' => $type->name,
+                    'slot' => $type->pivot->slot,
+                ];
+            })->toArray(),
+            'height' => $pokemon->height,
+            'weight' => $pokemon->weight,
+            'moves' => $pokemon->moves->map(function ($move) {
+                $details = json_decode($move->pivot->version_group_details ?? '[]', true);
+                return [
+                    'move' => $move->name,
+                    'version_group_details' => $details,
+                ];
+            })->toArray(),
+            'order' => $pokemon->order,
+            'species' => $pokemon->species,
+            'stats' => $pokemon->stats->map(function ($stat) {
+                return [
+                    'stat' => $stat->name,
+                    'base_stat' => $stat->pivot->base_stat,
+                    'effort' => $stat->pivot->effort,
+                ];
+            })->toArray(),
+            'abilities' => $pokemon->abilities->map(function ($ability) {
+                return [
+                    'ability' => $ability->name,
+                    'is_hidden' => (bool) $ability->pivot->is_hidden,
+                    'slot' => $ability->pivot->slot,
+                ];
+            })->toArray(),
+            'form' => $pokemon->form,
+        ];
 
         return response()->json($data, 200, [], JSON_UNESCAPED_SLASHES);
     }
