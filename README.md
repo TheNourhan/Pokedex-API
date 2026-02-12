@@ -3,6 +3,7 @@
 A RESTful Pokédex API built with Laravel that lets you browse, search, and manage teams of the original 151 Pokémon.
 
 ## Table of Contents
+- [Quick Start](#-quick-start)
 - [Features](#features)
 - [System Overview](#system-overview)
 - [Tech Stack](#tech-stack)
@@ -20,6 +21,17 @@ A RESTful Pokédex API built with Laravel that lets you browse, search, and mana
 - [Testing](#testing)
 - [Contributing](#contributing)
 
+## 🚀 Quick Start
+```bash
+git clone https://github.com/TheNourhan/Pokedex-API.git
+cd Pokedex-API
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+For more details, go to [Installation](#installation)
 ## Features
 - ✅ Browse and search Pokémon
 - ✅ Detailed Pokémon information (stats, moves, abilities, types)
@@ -212,7 +224,7 @@ Content-Type: application/json
 
 **How to use:**
 1. Install [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) for VS Code
-2. Open `api.http` file
+2. Open `api-test` file
 3. Click **"Send Request"** above any endpoint
 
 **What's included:**
