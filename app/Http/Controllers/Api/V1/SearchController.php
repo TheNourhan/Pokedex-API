@@ -17,7 +17,7 @@ class SearchController extends Controller
     public function search(Request $request): JsonResponse
     {
         $validator = validator($request->all(), [
-            'query' => 'required|string|min:1',
+            'query' => 'required|string|min:2|max:50',
             'limit' => 'nullable|integer|min:1|max:100',
         ]);
 
