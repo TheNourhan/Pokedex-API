@@ -22,7 +22,7 @@ class TeamAuthMiddleware
             $token = substr($token, 7);
         }
 
-        $validToken = env('TEAM_AUTH_TOKEN', 'pokemon-master-2024');
+        $validToken = env('TEAM_AUTH_TOKEN', 'pokemon-master-2026');
 
         if ($token !== $validToken) {
             return response()->json([
