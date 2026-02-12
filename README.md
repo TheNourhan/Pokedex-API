@@ -14,6 +14,9 @@ A RESTful Pokédex API built with Laravel that lets you browse, search, and mana
   - [Database & Migrations](#database--migrations)
   - [Import Commands](#import-commands)
 - [API Documentation](#api-documentation)
+  - [Base URL](#base-url)
+  - [Authentication](#authentication)
+  - [API Test Suite](#-api-test-suite)
 - [Testing](#testing)
 - [Contributing](#contributing)
 
@@ -92,7 +95,7 @@ php artisan migrate
 ```bash
 php artisan serve
 ```
-### Docker Installation
+### 🐳 Docker Installation
 _TODO_
 ## Usage & Commands
 ### **Server & Cache**
@@ -166,6 +169,12 @@ php artisan pokemon:import-from-api pikachu
 - ✅ Transforms API response to match database schema
 - ✅ Automatically creates related records (types, abilities, etc.)
 ## API Documentation
+### Base URL
+```
+http://localhost:8000/api/v1
+http://localhost:8000/api/v2  (paginated)
+```
+### Authentication
 - Team routes are protected with a hardcoded Bearer token:
 ```bash
 # Set your custom token in .env
@@ -180,6 +189,44 @@ Authorization: Bearer your-super-secret-token-2026
 # or
 Authorization: pokemon-master-2026
 ```
+### 📋 API Test Suite
+A complete **REST Client test suite** is included in the project root:
+
+**File:** [`api-test.http`](https://github.com/TheNourhan/Pokedex-API/blob/main/api-test.http)
+
+This file contains **50+ pre-written requests** to test all endpoints:
+
+```http
+# Example: Get all Pokemon
+GET http://localhost:8000/api/v1/pokemons
+
+# Example: Create a team (with auth)
+POST http://localhost:8000/api/v1/teams
+Authorization: Bearer pokemon-master-2026
+Content-Type: application/json
+
+{
+    "name": "My Team"
+}
+```
+
+**How to use:**
+1. Install [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) for VS Code
+2. Open `api.http` file
+3. Click **"Send Request"** above any endpoint
+
+**What's included:**
+| Section | Endpoints | Tests |
+|---------|-----------|-------|
+| Pokemon | `GET /pokemons`, `GET /pokemons/{id}` | 10+ requests |
+| Search | `GET /search` | 8+ requests |
+| Teams | `GET/POST /teams`, `POST /teams/{id}` | 20+ requests |
+| Pagination | `GET /v2/pokemons` | 10+ requests |
+| Auth | Token validation | 5+ scenarios |
+| Workflow | Complete team creation flow | 1 full example |
+
+**Total: 50+ test requests covering all endpoints!** 🚀
+
 ## Testing
 The project includes a comprehensive test suite with **63+ passing tests** covering all endpoints, models, and relationships.
 

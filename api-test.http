@@ -1,0 +1,242 @@
+### ========================================
+### POKEDEX API - DEVELOPMENT TEST SUITE
+### ========================================
+### Base URLs
+@baseUrl = http://localhost:8000/api/v1
+@baseUrlV2 = http://localhost:8000/api/v2
+@token = pokemon-master-2026
+
+### ========================================
+### 1. POKEMON ENDPOINTS (Public - No Auth)
+### ========================================
+
+### 1.1 Get all Pokemon (default sort: id-asc)
+GET {{baseUrl}}/pokemons
+
+### 1.2 Get all Pokemon with sorting
+GET {{baseUrl}}/pokemons?sort=name-asc
+### 
+GET {{baseUrl}}/pokemons?sort=name-desc
+### 
+GET {{baseUrl}}/pokemons?sort=id-asc
+### 
+GET {{baseUrl}}/pokemons?sort=id-desc
+
+### 1.3 Get Pokemon by ID
+GET {{baseUrl}}/pokemons/1    # Bulbasaur
+### 
+GET {{baseUrl}}/pokemons/4    # Charmander
+### 
+GET {{baseUrl}}/pokemons/7    # Squirtle
+### 
+GET {{baseUrl}}/pokemons/25   # Pikachu
+
+### 1.4 Get Pokemon - Not Found (404)
+GET {{baseUrl}}/pokemons/999
+
+### ========================================
+### 2. SEARCH ENDPOINTS (Public - No Auth)
+### ========================================
+
+### 2.1 Search by name (partial match)
+GET {{baseUrl}}/search?query=char
+###
+GET {{baseUrl}}/search?query=pika
+
+### 2.2 Search by type
+GET {{baseUrl}}/search?query=fire
+###
+GET {{baseUrl}}/search?query=water
+
+### 2.3 Search with limit
+GET {{baseUrl}}/search?query=sa&limit=5
+
+### 2.4 Search - validation errors
+GET {{baseUrl}}/search                    # Missing query (422)
+###
+GET {{baseUrl}}/search?query=a           # Too short (422)
+###
+GET {{baseUrl}}/search?query=fire&limit=200  # Limit too high (422)
+
+### 2.5 Search - no results
+GET {{baseUrl}}/search?query=xyzabc
+
+### ========================================
+### 3. TEAM ENDPOINTS (Requires Auth Token)
+### ========================================
+
+### 3.1 Authentication tests
+
+# Test 1: No token (should return 401)
+GET {{baseUrl}}/teams
+
+### 
+
+# Test 2: Invalid token (should return 401)
+GET {{baseUrl}}/teams
+Authorization: Bearer wrong-token-123
+
+### 
+
+# Test 3: Token without Bearer prefix (should return 200)
+GET {{baseUrl}}/teams
+Authorization: {{token}}
+
+### 
+
+# Test 4: Valid token with Bearer (should return 200)
+GET {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+
+### 3.2 Get all teams
+GET {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+
+### 3.3 Create team
+POST {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "My Starter Team"
+}
+
+### 3.4 Create team - validation errors
+POST {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": ""           # Empty name (422)
+}
+###
+POST {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "My Starter Team"  # Duplicate name (422)
+}
+
+### 3.5 Get team by ID
+GET {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+
+### 3.6 Get team - not found (404)
+GET {{baseUrl}}/teams/999
+Authorization: Bearer {{token}}
+
+### 3.7 Set team Pokemon (max 6)
+POST {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [4, 7, 25]
+}
+
+### 3.8 Set team Pokemon - validation errors
+# Too many Pokemon
+POST {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [1, 2, 3, 4, 5, 6, 7]
+}
+###
+# Duplicate Pokemon
+POST {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [4, 4, 4]
+}
+###
+# Invalid Pokemon ID
+POST {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [999]
+}
+###
+# Empty array
+POST {{baseUrl}}/teams/1
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": []
+}
+
+### ========================================
+### 4. API V2 - PAGINATED POKEMON (Public)
+### ========================================
+
+### 4.1 Get first page (default: limit=20)
+GET {{baseUrlV2}}/pokemons
+
+### 4.2 Get with custom pagination
+GET {{baseUrlV2}}/pokemons?limit=10&offset=0   # Page 1
+###
+GET {{baseUrlV2}}/pokemons?limit=10&offset=10  # Page 2
+###
+GET {{baseUrlV2}}/pokemons?limit=10&offset=20  # Page 3
+
+### 4.3 Get with sorting
+GET {{baseUrlV2}}/pokemons?sort=name-asc&limit=10
+###
+GET {{baseUrlV2}}/pokemons?sort=name-desc&limit=10
+###
+GET {{baseUrlV2}}/pokemons?sort=id-asc&limit=10
+###
+GET {{baseUrlV2}}/pokemons?sort=id-desc&limit=10
+
+### 4.4 Validation errors
+GET {{baseUrlV2}}/pokemons?limit=200        # Limit too high (422)
+###
+GET {{baseUrlV2}}/pokemons?sort=invalid     # Invalid sort (422)
+###
+GET {{baseUrlV2}}/pokemons?offset=-1        # Invalid offset (422)
+
+### ========================================
+### 5. COMPLETE WORKFLOW EXAMPLE
+### ========================================
+
+### 5.1 Create a new team
+POST {{baseUrl}}/teams
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "name": "Falkons League"
+}
+
+### 5.2 Add Pokemon to team (save the team ID from response)
+POST {{baseUrl}}/teams/6
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [4, 7, 25]
+}
+
+### 5.3 View the team
+GET {{baseUrl}}/teams/6
+Authorization: Bearer {{token}}
+
+### 5.4 Update team Pokemon
+POST {{baseUrl}}/teams/2
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "pokemons": [1, 4, 7]
+}
+
+### 5.5 View all teams
+GET {{baseUrl}}/teams
+Authorization: Bearer {{token}}
