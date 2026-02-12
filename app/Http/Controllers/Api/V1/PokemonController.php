@@ -113,10 +113,9 @@ class PokemonController extends Controller
             'height' => $pokemon->height,
             'weight' => $pokemon->weight,
             'moves' => $pokemon->moves->map(function ($move) {
-                $details = json_decode($move->pivot->version_group_details ?? '[]', true);
                 return [
                     'move' => $move->name,
-                    'version_group_details' => $details,
+                    'version_group_details' => $move->pivot->version_group_details ?? [],
                 ];
             })->toArray(),
             'order' => $pokemon->order,

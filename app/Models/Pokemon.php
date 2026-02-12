@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Models\Relationships\PokemonMovePivot;
 
 class Pokemon extends Model
 {
@@ -54,7 +55,9 @@ class Pokemon extends Model
      */
     public function moves(): BelongsToMany
     {
-        return $this->belongsToMany(Move::class, 'pokemon_moves');
+        return $this->belongsToMany(Move::class, 'pokemon_moves')
+            ->withPivot('version_group_details')
+            ->using(PokemonMovePivot::class);
     }
 
     /**
