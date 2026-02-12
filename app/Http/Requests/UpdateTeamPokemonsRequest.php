@@ -4,7 +4,6 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Team;
-use Illuminate\Validation\Rule;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 
@@ -28,6 +27,12 @@ class UpdateTeamPokemonsRequest extends FormRequest
                 'required',
                 'array',
                 'max:' . Team::MAX_POKEMONS,
+                function ($attribute, $value, $fail) {
+                    // Manual duplicate check
+                    if (count($value) !== count(array_unique($value))) {
+                        $fail('Duplicate pokemon IDs are not allowed.');
+                    }
+                },
             ],
             'pokemons.*' => [
                 'required',
@@ -73,9 +78,8 @@ class UpdateTeamPokemonsRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         if ($this->has('pokemons')) {
-            // Remove duplicates and re-index
             $this->merge([
-                'pokemons' => array_values(array_unique($this->pokemons)),
+                'pokemons' => $this->pokemons,
             ]);
         }
     }
