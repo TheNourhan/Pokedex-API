@@ -181,7 +181,20 @@ Authorization: Bearer your-super-secret-token-2026
 Authorization: pokemon-master-2026
 ```
 ## Testing
-_TODO_
+The project includes a comprehensive test suite with **63+ passing tests** covering all endpoints, models, and relationships.
+
+### Running Tests
+
+```bash
+# Run all tests
+php artisan test
+
+# Run specific test suite
+php artisan test --filter PokemonControllerTest
+php artisan test --filter TeamControllerTest
+php artisan test --filter SearchControllerTest
+php artisan test --filter PokemonRelationshipsTest
+```
 ## Contributing
 Thank you for considering contributing to this project!
 
