@@ -62,8 +62,8 @@ class TeamControllerTest extends TestCase
                     'id',
                     'name',
                     'pokemons',
-                    'created_at',
-                    'updated_at',
+                    // 'created_at',
+                    // 'updated_at',
                 ],
             ]);
     }

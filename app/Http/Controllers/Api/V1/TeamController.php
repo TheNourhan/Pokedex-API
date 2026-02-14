@@ -70,8 +70,8 @@ class TeamController extends Controller
             'id' => $team->id,
             'name' => $team->name,
             'pokemons' => $team->pokemons->pluck('external_id')->toArray(),
-            'created_at' => $team->created_at,
-            'updated_at' => $team->updated_at,
+            // 'created_at' => $team->created_at,
+            // 'updated_at' => $team->updated_at,
         ];
     }
 }
