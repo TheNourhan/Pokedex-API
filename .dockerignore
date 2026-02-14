@@ -1,0 +1,16 @@
+.git
+.vscode
+.idea
+node_modules
+vendor
+storage/logs/*
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+.env
+.env.*
+!.env.docker
+docker-compose.yml
+Dockerfile
+README.md
+tests/coverage

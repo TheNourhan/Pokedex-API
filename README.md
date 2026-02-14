@@ -108,7 +108,81 @@ php artisan migrate
 php artisan serve
 ```
 ### 🐳 Docker Installation
+#### Prerequisites
+- [Docker](https://docs.docker.com/get-started/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+#### Installation Steps
+1. Update your `.env` file with Docker database configuration:
+```bash
+DB_CONNECTION=mysql
+DB_HOST=mysql        # Service name, not IP!
+DB_PORT=3306
+DB_DATABASE=pokedex
+DB_USERNAME=pokedex
+DB_PASSWORD=secret
+```
+2. Run the Docker setup script:
+```bash
+chmod +x docker-setup.sh
+./docker-setup.sh
+```
+**The setup script will:** <br>
+- Build Docker images (PHP 8.2 + MySQL 8.0)
+- Start containers
+- Install Composer dependencies
+- Run database migrations & seeders
+
+#### Empty Pokemon table?
+```bash
+# Import Pokemon
+docker exec pokedex-app php artisan pokemon:import-from-api 1
+docker exec pokedex-app php artisan pokemon:import-from-api 4
+docker exec pokedex-app php artisan pokemon:import-from-api 7
+docker exec pokedex-app php artisan pokemon:import-from-api 25
+```
+### Import All 151 Pokémon (JSON Dump)
 _TODO_
+<!-- 1. Place your `pokemons.json` file in `storage/app/`.
+2. Run the import command:
+```bash
+docker exec pokedex-app php artisan pokemon:import-dump
+```
+**The import will:** <br>
+- Create all 151 Pokémon with complete data
+- Set up types, abilities, moves, and stats
+- Show progress bar and import statistics -->
+
+#### Useful Commands
+```bash
+# Start containers
+docker-compose up -d
+
+# Stop containers
+docker-compose down
+
+# View logs
+docker-compose logs -f
+
+# Generate key inside container
+docker exec pokedex-app php artisan key:generate
+
+# Run migrations
+docker exec pokedex-app php artisan migrate:fresh --seed
+
+# Run Artisan commands
+docker exec pokedex-app php artisan route:list
+
+# Run tests
+docker exec pokedex-app php artisan test
+
+# Import Pokemon
+docker exec pokedex-app php artisan pokemon:import-from-api 25
+
+# Access MySQL
+docker exec -it pokedex-mysql mysql -u pokedex -psecret pokedex
+```
+
 ## Usage & Commands
 ### **Server & Cache**
 ```bash
