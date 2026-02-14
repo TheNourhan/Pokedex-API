@@ -99,14 +99,26 @@ DB_DATABASE=pokedex
 DB_USERNAME=root
 DB_PASSWORD=
 ```
-5. Run migrations:
+5. Create a MySQL database:
+```bash
+# Login to MySQL
+mysql -u root -p
+
+# Create database
+CREATE DATABASE pokedex;
+
+# Exit
+exit;
+```
+6. Run migrations:
 ```bash
 php artisan migrate
 ```
-6. Start the development server:
+7. Start the development server:
 ```bash
 php artisan serve
 ```
+> Note: Make sure MySQL is running and you've created the database before running migrations.
 ### 🐳 Docker Installation
 #### Prerequisites
 - [Docker](https://docs.docker.com/get-started/get-docker/)
